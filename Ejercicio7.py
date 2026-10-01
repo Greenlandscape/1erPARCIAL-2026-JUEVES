@@ -54,3 +54,34 @@ class KwikEMart:
         else:
             print(f"No se encontró el {producto.descripcion} en {seccion}.")
 
+    def actualizar_stock(self, producto, seccion, nuevo_stock):
+        lista_atributo = self.dame_lista_seccion(seccion)
+
+        if lista_atributo:
+            for p in lista_atributo:
+                if p.id_producto == producto.id_producto:
+                    p.stock = nuevo_stock
+                return # ya cumplió su función
+            else:
+                print(f"No se encotró el producto {producto.descripcion} en {seccion}")
+    
+    def procesar_vencidos(self):
+        import datatime
+        hoy = datatime.date.today()
+
+        t_limite = hoy + datatime.timedelta(days=1) # las proximas 24h según el enunciado, o sea, se suma un día
+        vencidos = 0
+        secciones = [self.bebidas, self.snacks, self.conveniencia]
+        # recorremos las secciones, luego los productos en cada seccion
+        for seccion in secciones:
+            productos_a_eliminar = []
+            # recorremos toda la seccion buscando vencidos
+            for p in seccion:
+                if p.fecha_vencimiento <= t_limite:
+                    vencidos += 1
+                    productos_a_eliminar.append(p)
+        
+            # ahora eliminamos todos los productos vencidos de la seccion
+            for vencido in productos_a_eliminar:
+                seccion.remove(vencido)
+        return vencidos
